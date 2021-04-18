@@ -88,10 +88,10 @@ class NoteDrawer extends StatefulWidget {
   }
 
   @override
-  Note_DrawerState createState() => Note_DrawerState();
+  NoteDrawerState createState() => NoteDrawerState();
 }
 
-class Note_DrawerState extends State<NoteDrawer> {
+class NoteDrawerState extends State<NoteDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(

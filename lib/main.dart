@@ -52,11 +52,13 @@ class KalendarzState extends State<Kalendarz> {
   List<dynamic> _selectedEvents;
   TextEditingController _textController;
   SharedPreferences prefs;
+  TextEditingController zmianaTextu;
   @override
   void initState() {
     super.initState();
     _calendarController = CalendarController();
     _textController = TextEditingController();
+    zmianaTextu = TextEditingController();
     _events = {};
     _selectedEvents = [];
     initializeDateFormatting('pl_PL', null);
@@ -144,6 +146,31 @@ class KalendarzState extends State<Kalendarz> {
     );
   }
 
+  Future<String> zmiana(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Podaj tresc"),
+            content: TextField(
+              controller: zmianaTextu,
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  if (zmianaTextu.text != null) {
+                    Navigator.of(context).pop(zmianaTextu.text.toString());
+                  } else {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Text("Zatwierdz"),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,36 +218,70 @@ class KalendarzState extends State<Kalendarz> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ..._selectedEvents.map((event) => Card(
-                            color: Colors.blue[100],
-                            elevation: 10,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text(
-                                    event,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
+                      ..._selectedEvents.map(
+                        (event) => Card(
+                          color: Colors.blue[100],
+                          elevation: 10,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: Text(
+                                  event,
+                                  style: TextStyle(fontSize: 20),
                                 ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete_forever_rounded,
-                                    size: 25,
-                                  ),
-                                  onPressed: () {
+                              ),
+                              SizedBox(
+                                width: 200,
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.drive_file_rename_outline,
+                                  size: 25,
+                                ),
+                                onPressed: () {
+                                  // print(_events[_calendarController.selectedDay
+                                  //     .add(Duration(days: 3))]);
+                                  // _events[_calendarController.selectedDay
+                                  //         .add(Duration(days: 3))]
+                                  //     .removeWhere(
+                                  //         (element) => element == null);
+
+                                  zmiana(context).then((value) {
+                                    // print(value);
+
                                     setState(() {
+                                      int index = _events[
+                                              _calendarController.selectedDay]
+                                          .indexWhere(
+                                              (element) => element == event);
                                       _events[_calendarController.selectedDay]
-                                          .remove(event);
+                                          [index] = value;
                                     });
                                     prefs.setString("events",
                                         jsonEncode(encodeMap(_events)));
-                                  },
-                                )
-                              ],
-                            ),
-                          ))
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete_forever_rounded,
+                                  size: 25,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _events[_calendarController.selectedDay]
+                                        .remove(event);
+                                  });
+                                  prefs.setString(
+                                      "events", jsonEncode(encodeMap(_events)));
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      )
                     ]),
               ),
             ),

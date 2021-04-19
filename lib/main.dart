@@ -225,16 +225,19 @@ class KalendarzState extends State<Kalendarz> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5),
-                                child: Text(
-                                  event,
-                                  style: TextStyle(fontSize: 20),
+                              Container(
+                                width: 230,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 5),
+                                  child: Text(
+                                    event,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 200,
-                              ),
+                              // SizedBox(
+                              //   width: 200,
+                              // ),
                               IconButton(
                                 icon: Icon(
                                   Icons.drive_file_rename_outline,
